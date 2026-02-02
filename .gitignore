@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual env
+venv/
+.env/
+.env*
+.env.local
+
+# Secrets
+secrets.json
+config.yaml
+config.yml
+
+# Vector DB / embeddings
+vector_store/
+chroma/
+faiss_index/
+*.bin
+*.index
+
+# Data files
+data/
+uploads/
+parsed_docs/
+*.pdf
+
+# Logs
+logs/
+*.log
+
+# Models
+models/
+*.gguf
+*.onnx
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
