@@ -8,6 +8,8 @@ from sentence_transformers import SentenceTransformer
 
 from .models import PolicyChunk
 from .vector_store import VectorStore
+from .debug_dump import dump_chunks_with_embeddings
+
 
 
 class RAGPipeline:
@@ -30,6 +32,9 @@ class RAGPipeline:
             return
         embeddings = self.embedder.encode(texts, show_progress_bar=False)
         embeddings = self._normalize(np.array(embeddings))
+
+        dump_chunks_with_embeddings(valid_chunks, embeddings)
+        
         self.vector_store = VectorStore(self.embedder.get_sentence_embedding_dimension())
         self.vector_store.add(embeddings, valid_chunks)
         self.ready = True

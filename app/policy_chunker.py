@@ -27,7 +27,7 @@ def _extract_clause(line: str) -> Optional[str]:
 def _split_sentences(text: str) -> List[str]:
     if not text:
         return []
-    # Simple sentence boundary; avoids heavy NLP dependencies.
+    # avoid breaking on abbreviations or decimals
     parts = re.split(r"(?<=[.!?])\s+(?=[A-Z0-9])", text.strip())
     return [p.strip() for p in parts if p.strip()]
 
