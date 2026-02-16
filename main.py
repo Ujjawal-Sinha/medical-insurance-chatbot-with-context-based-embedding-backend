@@ -27,7 +27,6 @@ pipeline = RAGPipeline(
 
 current_chunks: List[PolicyChunk] = []
 
-
 @app.post("/upload")
 async def upload_pdf(file: UploadFile = File(...)) -> Dict[str, Any]:
     if not file.filename.lower().endswith(".pdf"):
@@ -70,7 +69,7 @@ async def ask_question(question: str) -> Dict[str, Any]:
     if not question.strip():
         raise HTTPException(status_code=400, detail="Question must not be empty.")
 
-    retrieved = pipeline.retrieve(question, top_k=6)
+    retrieved = pipeline.retrieve(question, top_k=4)
     if not retrieved:
         return {"answer": "I couldn't find the answer in the provided policy context.", "sources": []}
 

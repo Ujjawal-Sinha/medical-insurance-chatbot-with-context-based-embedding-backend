@@ -14,6 +14,7 @@ from .debug_dump import dump_chunks_with_embeddings
 
 class RAGPipeline:
     def __init__(self, embed_model_name: str, llm_model: str) -> None:
+        self.query_cache = {}
         self.embedder = SentenceTransformer(embed_model_name)
         self.llm_model = llm_model
         self.vector_store: VectorStore = VectorStore(self.embedder.get_sentence_embedding_dimension())
@@ -39,11 +40,17 @@ class RAGPipeline:
         self.vector_store.add(embeddings, valid_chunks)
         self.ready = True
 
-    def retrieve(self, question: str, top_k: int = 5) -> List[Tuple[PolicyChunk, float]]:
+    def retrieve(self, question: str, top_k: int = 5):
         if not self.ready:
             return []
-        query_vec = self.embedder.encode([question], show_progress_bar=False)
-        query_vec = self._normalize(np.array(query_vec))
+
+        if question in self.query_cache:
+            query_vec = self.query_cache[question]
+        else:
+            query_vec = self.embedder.encode([question], show_progress_bar=False)
+            query_vec = self._normalize(np.array(query_vec))
+            self.query_cache[question] = query_vec
+
         return self.vector_store.search(query_vec, top_k=top_k)
 
     def answer(self, question: str, retrieved: List[Tuple[PolicyChunk, float]]) -> str:
@@ -75,6 +82,9 @@ class RAGPipeline:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            options={"temperature": 0.1},
+            options={"temperature": 0.1,
+            "num_predict": 256},
+            
         )
         return response["message"]["content"].strip()
+    
